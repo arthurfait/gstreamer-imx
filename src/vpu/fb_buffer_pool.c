@@ -166,7 +166,7 @@ static void gst_imx_vpu_fb_buffer_pool_release_buffer(GstBufferPool *pool, GstBu
 
 		if (vpu_meta->framebuffer == NULL)
 		{
-			GST_DEBUG_OBJECT(pool, "buffer %p does not have VPU metadata - nothing to clear", buffer);
+			GST_DEBUG_OBJECT(pool, "buffer %p does not have VPU metadata - nothing to clear", (gpointer)buffer);
 			return;
 		}
 
@@ -181,13 +181,13 @@ static void gst_imx_vpu_fb_buffer_pool_release_buffer(GstBufferPool *pool, GstBu
 			{
 				vpu_meta->not_displayed_yet = FALSE;
 				vpu_pool->framebuffers->num_available_framebuffers++;
-				GST_DEBUG_OBJECT(pool, "cleared buffer %p", buffer);
+				GST_DEBUG_OBJECT(pool, "cleared buffer %p", (gpointer)buffer);
 			}
 		}
 		else if (!vpu_pool->framebuffers->decenc_states.dec.decoder_open)
-			GST_DEBUG_OBJECT(pool, "not clearing buffer %p, since VPU decodr is closed", buffer);
+			GST_DEBUG_OBJECT(pool, "not clearing buffer %p, since VPU decoder is closed", (gpointer)buffer);
 		else
-			GST_DEBUG_OBJECT(pool, "buffer %p already cleared", buffer);
+			GST_DEBUG_OBJECT(pool, "buffer %p already cleared", (gpointer)buffer);
 
 		g_mutex_unlock(&(vpu_pool->framebuffers->available_fb_mutex));
 	}
@@ -267,21 +267,21 @@ gboolean gst_imx_vpu_set_buffer_contents(GstBuffer *buffer, GstImxVpuFramebuffer
 	video_meta = gst_buffer_get_video_meta(buffer);
 	if (video_meta == NULL)
 	{
-		GST_ERROR("buffer with pointer %p has no video metadata", buffer);
+		GST_ERROR("buffer with pointer %p has no video metadata", (gpointer)buffer);
 		return FALSE;
 	}
 
 	vpu_meta = GST_IMX_VPU_BUFFER_META_GET(buffer);
 	if (vpu_meta == NULL)
 	{
-		GST_ERROR("buffer with pointer %p has no VPU metadata", buffer);
+		GST_ERROR("buffer with pointer %p has no VPU metadata", (gpointer)buffer);
 		return FALSE;
 	}
 
 	phys_mem_meta = GST_IMX_PHYS_MEM_META_GET(buffer);
 	if (phys_mem_meta == NULL)
 	{
-		GST_ERROR("buffer with pointer %p has no phys mem metadata", buffer);
+		GST_ERROR("buffer with pointer %p has no phys mem metadata", (gpointer)buffer);
 		return FALSE;
 	}
 
@@ -292,8 +292,8 @@ gboolean gst_imx_vpu_set_buffer_contents(GstBuffer *buffer, GstImxVpuFramebuffer
 		memory = gst_allocator_alloc(NULL, framebuffers->total_size, NULL);
 		gst_memory_map(memory, &map_info, GST_MAP_WRITE);
 		memcpy(map_info.data, framebuffer->pbufVirtY, framebuffers->y_size);
-		memcpy(map_info.data, framebuffer->pbufVirtCb, framebuffers->u_size);
-		memcpy(map_info.data, framebuffer->pbufVirtCr, framebuffers->v_size);
+		memcpy(map_info.data + framebuffers->y_size, framebuffer->pbufVirtCb, framebuffers->u_size);
+		memcpy(map_info.data + framebuffers->y_size + framebuffers->u_size, framebuffer->pbufVirtCr, framebuffers->v_size);
 		gst_memory_unmap(memory, &map_info);
 
 		vpu_meta->framebuffer = NULL;
