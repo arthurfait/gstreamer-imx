@@ -82,7 +82,7 @@ def build(bld):
 			use = 'gstimxcommon',
 			uselib = ['WAYLAND-CLIENT','WAYLAND-EGL', 'GLES1', 'GLES2', 'EGL', 'VIVANTE', 'GSTREAMER_VIDEO'] + bld.env['COMMON_USELIB'],
 			target = 'gsteglvivsink',
-			defines = ['HAVE_CONFIG_H', 'USE_EGL_WAYLAND', 'GST_LICENSE="LGPL"' 'EGL_API_FB=1', 'WL_EGL_PLATFORM'],
+			defines = ['HAVE_CONFIG_H', 'USE_EGL_WAYLAND', 'GST_LICENSE="LGPL"' 'EGL_API_FB', 'WL_EGL_PLATFORM'],
 			source = bld.path.ant_glob('*.c'),
 			install_path = bld.env['PLUGIN_INSTALL_PATH']
 		)
