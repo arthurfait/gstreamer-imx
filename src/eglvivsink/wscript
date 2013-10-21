@@ -9,6 +9,9 @@ def check_lib_list(conf, uselib, uselib_store, lib_list):
 			return True
 	return False
 
+def check_wayland(conf, uselib=''):
+    return True
+
 def check_x11(conf, uselib = ''):
 	return \
 	  conf.check_cc(mandatory = 0, lib = 'X11', uselib = uselib, uselib_store = 'X11') and \
@@ -58,7 +61,8 @@ def check_viv_texformat(conf, texformat):
 def configure(conf):
 	from waflib.Build import Logs
 	conf.env['DEFINES_EGL'] = ['LINUX']
-	if check_x11(conf) and \
+
+	if (check_x11(conf) or check_wayland(conf)) and \
 	  check_egl(conf, 'EGL') and \
 	  check_gles2(conf, lib_list = ['GLESv2', 'GLESv2x', 'GLESv2SC']):
 		for texfmt in ['VIV_I420', 'VIV_YV12', 'VIV_NV12', 'VIV_NV21', 'VIV_YUY2', 'VIV_UYVY']:
